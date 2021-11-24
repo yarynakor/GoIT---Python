@@ -1,15 +1,19 @@
+
 extensions = set()
 unknown_extensions = set()
 
 #Folders to sort:
 folders = ('images', 'audio', 'video', 'documents', 'archives')
 
+#Extensions to loop through in the folder and associate with the file type
 images = ('.jpeg', '.png', '.jpg', '.svg')
 video = ('avi', 'mp4', 'mov', 'mkv')
 docs = ('doc', 'docx', 'txt', 'pdf', 'xlsx', 'pptx')
 audio = ('mp3', 'ogg', 'wav', 'amr')
 archive = ('zip', 'gz', 'tar')
 
+
+#Clean the files names and rename to english alphabet
 CYRILLIC_SYMBOLS = 'абвгдеёжзийклмнопрстуфхцчшщъьыэюяєіїґ'
 TRANSLATION = ("a", "b", "v", "g", "d", "e", "e", "j", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u",
                "f", "h", "ts", "ch", "sh", "sch", "", "y", "", "e", "yu", "u", "ja", "je", "ji", "g")
@@ -33,7 +37,7 @@ def normalize(filename):
           new_name += '_'
   return new_name
 
-
+#check directory for folder and create if one does not exist
 def sort_folders(p:Path):
     for item in p.iterdir():
         if item.is_dir():
@@ -50,11 +54,13 @@ def sort_folders(p:Path):
         elif item.is_file():
             sort_folders(item)
 
+#rename the file with extension
 def rename_file(p, new_name, extension):
     p.rename(Path(p.parent, new_name + extension))
     new_file = Path(new_name + extension)
     return new_file
 
+#loop through files and add to created lists by extension
 def file_to_list(new_name, extension = ''):
     if extension in images:
         images.append(new_name + extension)
@@ -84,7 +90,7 @@ def file_to_list(new_name, extension = ''):
         if extension:
             unknown_extensions.add(extension)
             
-
+#Sort files in directory
 def file_sorter(p:Path):
     extension = p.suffix
     name = p.stem
