@@ -2,6 +2,7 @@
 from collections import UserDict
 from typing import Optional, List
 from datetime import datetime, date
+import pickle
 
 
 class Field:
@@ -129,15 +130,47 @@ class AddressBook(UserDict):
         while values:
             yield values[:n]
             values = values[n:]
+   
+   
+   #Homework 12 added functionality. 
+   # Address Book added functionality to save the address book as a file, search for contacts. Delete and restore records.      
+    def search_for_records(self, search_symbols) -> Optional[Record]:
+        contacts = list(self.data.values())
+        found_contacts = set()
+        for contact in contacts:
+            contact_phones = ' '.join([p.value for p in contact.phone])
+            if search_symbols in contact.name.value or search_symbols in contact_phones:
+                found_contacts.add(contact)
+        return found_contacts
 
     def __str__(self):
         return str(self.data)
 
-book = AddressBook()
-book.add_record(['Yehor', "+380674889977"])
-book.add_record(['Liza', "+380674889277"])
-book.add_record(['Andrew', "+380674889277"])
 
-record_iterator = book.iterator(2)
+def save_addressbook(book, filename):
+    """Serialization of the adressbook"""
+    with open(filename, "wb") as fh:
+        pickle.dump(book, fh)
 
-print(next(record_iterator))
+
+def unpack_addressbook(filename):
+    """Deserialization of the adressbook"""
+    with open(filename, "rb") as fh:
+        unpacked = pickle.load(fh)
+        return unpacked
+
+
+if __name__ == '__main__':
+    book = AddressBook()
+
+    book.add_record(['Yehor', "+380674889977"])
+    book.add_record(['Liza', "+380674889277"])
+    book.add_record(['Andrew', "+380674889277"])
+
+    print(book.search_for_records('067'))
+
+    save_addressbook(book, 'addressbook.txt')
+    book.add_record(['Vasyl', "+1876598888"])
+    book2 = unpack_addressbook('addressbook.txt')
+    print(book)
+    print(book2)    
