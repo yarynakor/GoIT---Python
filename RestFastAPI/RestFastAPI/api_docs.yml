@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: Contact Management API
+  description: This API allows you to manage your contact list by performing CRUD (Create, Read, Update, Delete) operations.
+  version: 1.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /contacts:
+    post:
+      summary: Create a new contact
+      operationId: createContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactIn'
+      responses:
+        '201':
+          description: Contact created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactOut'
+        '400':
+          description: Bad request
+        '409':
+          description: Contact with the given email already exists
+    get:
+      summary: Get a list of contacts
+      operationId: getContacts
+      parameters:
+        - name: q
+          in: query
+          description: Filter contacts by first name, last name, or email
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contacts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactOut'
+        '400':
+          description: Bad request
+    servers:
+      - url: http://localhost:8000
+  /contacts/{contact_id}:
+    get:
+      summary: Get a contact by ID
+      operationId: getContactById
+      parameters:
+        - name: contact_id
+          in: path
+          description: ID of the contact to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Contact retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactOut'
+        '400':
+          description: Bad request
+        '404':
+          description: Contact not found
+    put:
+      summary: Update a contact
+      operationId: updateContact
+      parameters:
+        - name: contact_id
+          in: path
+          description: ID of the contact to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactIn'
+      responses:
+        '200':
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactOut'
+        '400':
+          description: Bad request
+        '404':
+          description: Contact not found
+    delete:
+      summary: Delete a contact
+      operationId: deleteContact
+      parameters:
+        - name: contact_id
+          in: path
+          description: ID of the contact to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Contact deleted successfully
+        '400':
+          description: Bad request
+        '404':
